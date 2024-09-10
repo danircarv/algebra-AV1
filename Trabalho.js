@@ -80,6 +80,25 @@ class LinearAlgebra{
         return new Matrix(a.rows, a.cols,sum)
     }
 
+    dot(a, b){
+        if(a.cols !== b.rows){
+            console.log("Impossível realizar a multiplicação");
+            return null;
+        }
+        var mult = new Array(a.rows * b.cols).fill(0);
+        for(let i = 0; i < a.rows; i++){
+            for(let j = 0; j < b.cols; j++){
+                var soma = 0;
+                for(let k = 0; k < a.cols; k++){
+                    soma += a.elements[i * a.cols + k] * b.elements[k * b.cols + j];
+                }
+                mult[i * b.cols + j] = soma;
+            }
+        }
+        return new Matrix(a.rows, b.cols, mult);
+    }
+
+
     solve(A, b, x_inicial, max_iter = 1000, tol = 0.0001) {
         let n = A.rows;
         let x = [...x_inicial];
