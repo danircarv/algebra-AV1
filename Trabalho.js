@@ -17,7 +17,7 @@ class Matrix{
     }
 
     set(i,j,value){
-        if(i < 1 || i >= this.rows || j < 1 || j >= this.cols){
+        if(i < 1 || i > this.rows || j < 1 || j > this.cols){
             console.log("Índice fora dos limites da matriz")
         }
 
@@ -79,6 +79,18 @@ class LinearAlgebra{
         }
         return new Matrix(a.rows, a.cols,sum)
     }
+
+    times(a, b) {
+        const resultado = [];
+        for (var i = 0; i < b.length; i++) {
+            resultado[i] = [];
+            for (var j = 0; j < b[i].length; j++) {
+                resultado[i][j] = b[i][j] * a;
+            }
+        }
+        return resultado;
+    }
+
 
     dot(a, b){
         if(a.cols !== b.rows){
@@ -149,17 +161,8 @@ class LinearAlgebra{
 
 
 
-let A = new Matrix(3, 3, [
-    4, 1, 2,
-    3, 5, 1,
-    1, 1, 3
-]);
 
-let b = [4, 7, 3];
-let x_inicial = [0, 0, 0]; //
 
-const calculo = new LinearAlgebra()
-calculo.solve(A,b,x_inicial,1000)
 
 
 
