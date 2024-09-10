@@ -72,7 +72,15 @@ class LinearAlgebra{
         }
     }
 
-    solve(A, b, x_inicial, max_iter = 1000, tol = 1e-6) {
+    sum(a, b){
+        var sum=[]
+        for(let i=0; i<a.rows*a.cols; i++){
+            sum.push(a.elements[i]+b.elements[i])
+        }
+        return new Matrix(a.rows, a.cols,sum)
+    }
+
+    solve(A, b, x_inicial, max_iter = 1000, tol = 0.0001) {
         let n = A.rows;
         let x = [...x_inicial];
         let x_old = new Array(n);
