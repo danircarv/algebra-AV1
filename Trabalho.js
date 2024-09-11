@@ -117,11 +117,9 @@ class LinearAlgebra{
 
         for (let iter = 0; iter < 5000; iter++) {
 
-
             for (let i = 0; i < n; i++) {
                 x_old[i] = x[i];
             }
-
 
             for (let i = 0; i < n; i++) {
                 let soma = 0;
@@ -132,7 +130,6 @@ class LinearAlgebra{
                 }
                 x[i] = (b[i] - soma) / A.get(i + 1, i + 1);
             }
-
 
             let tol = 0.001;
             let erro_max = 0;
