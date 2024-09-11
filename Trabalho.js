@@ -45,7 +45,7 @@ class Vector{
     }
 
     set(i,value){
-        if(i < 1 || i >= this.dim){
+        if(i < 1 || i > this.dim){
             console.log("Ínice fora dos limites do vetor.")
         }
         this.elements[i-1]= value
@@ -73,22 +73,20 @@ class LinearAlgebra{
     }
 
     sum(a, b){
-        var sum=[]
-        for(let i=0; i<a.rows*a.cols; i++){
-            sum.push(a.elements[i]+b.elements[i])
+        const sum = [];
+        if(a.rows === b.rows && a.cols === b.cols){
+            for(let i=0; i<a.rows*a.cols; i++){
+                sum.push(a.elements[i]+b.elements[i])
+            }
+        }else{
+            console.log("Impossível realizar a soma, matrizes de dimensões diferentes.")
         }
         return new Matrix(a.rows, a.cols,sum)
     }
 
     times(a, b) {
-        const resultado = [];
-        for (var i = 0; i < b.length; i++) {
-            resultado[i] = [];
-            for (var j = 0; j < b[i].length; j++) {
-                resultado[i][j] = b[i][j] * a;
-            }
-        }
-        return resultado;
+        const multipliedElements = b.elements.map((element) => element*a)
+        return new Matrix(b.rows, b.cols,multipliedElements)
     }
 
 
@@ -97,10 +95,10 @@ class LinearAlgebra{
             console.log("Impossível realizar a multiplicação");
             return null;
         }
-        var mult = new Array(a.rows * b.cols).fill(0);
+        const mult = new Array(a.rows * b.cols).fill(0);
         for(let i = 0; i < a.rows; i++){
             for(let j = 0; j < b.cols; j++){
-                var soma = 0;
+                let soma = 0;
                 for(let k = 0; k < a.cols; k++){
                     soma += a.elements[i * a.cols + k] * b.elements[k * b.cols + j];
                 }
@@ -111,13 +109,14 @@ class LinearAlgebra{
     }
 
 
-    solve(A, b, x_inicial, max_iter = 1000, tol = 0.0001) {
+    solve(A, b, x_inicial) {
         let n = A.rows;
         let x = [...x_inicial];
         let x_old = new Array(n);
         let convergiu = false;
 
-        for (let iter = 0; iter < max_iter; iter++) {
+        for (let iter = 0; iter < 5000; iter++) {
+
 
             for (let i = 0; i < n; i++) {
                 x_old[i] = x[i];
@@ -128,17 +127,19 @@ class LinearAlgebra{
                 let soma = 0;
                 for (let j = 0; j < n; j++) {
                     if (j !== i) {
-                        soma += A.get(i + 1, j + 1) * x[j];
+                        soma += A.get(i + 1, j + 1) * x_old[j];
                     }
                 }
                 x[i] = (b[i] - soma) / A.get(i + 1, i + 1);
             }
 
 
+            let tol = 0.001;
             let erro_max = 0;
             for (let i = 0; i < n; i++) {
                 erro_max = Math.max(erro_max, Math.abs(x[i] - x_old[i]));
             }
+
             if (erro_max < tol) {
                 convergiu = true;
                 break;
@@ -151,6 +152,7 @@ class LinearAlgebra{
             console.log("Número máximo de iterações atingido:");
         }
 
+
         console.log("Solução:");
         for (let i = 0; i < n; i++) {
             console.log(`x[${i + 1}] = ${x[i]}`);
@@ -158,8 +160,6 @@ class LinearAlgebra{
     }
 
 }
-
-
 
 
 
