@@ -159,6 +159,8 @@ class LinearAlgebra{
 }
 
 class Transformation{
+    algebra = new LinearAlgebra();
+
     translate2D(vetor, dx, dy){
         if(vetor instanceof Vector){
             if(vetor.dim === 2){
@@ -187,7 +189,7 @@ class Transformation{
     }
 
     rotation2D(vector,angle){
-        if(vector instanceof Vector || vector.dim === 2){
+        if(vector instanceof Vector && vector.dim === 2){
             const matrizRotacao2D = new Matrix(2,2,[
                 Math.cos(angle),-Math.sin(angle),
                 Math.sin(angle), Math.cos(angle)
@@ -206,15 +208,402 @@ class Transformation{
             console.log("O argumento passado não é um vetor ou tem uma dimensão maior ou menor a 2")
         }
 
-        
+
+
+
     }
 
+    rotation3DX(vector, angle) {
+        if(vector instanceof Vector && vector.dim === 3){
+            const matrizRotacao3DX = new Matrix(3, 3, [
+                1, 0, 0,
+                0, Math.cos(angle), -Math.sin(angle),
+                0, Math.sin(angle), Math.cos(angle)
+            ]);
+
+            const vetorEmFormaDeMatriz = new Matrix(3, 1, [
+                vector.elements[0],
+                vector.elements[1],
+                vector.elements[2]
+            ]);
+
+            const vetorResultadoEmFormaDeMatriz = this.algebra.dot(matrizRotacao3DX, vetorEmFormaDeMatriz);
+            return new Vector(3, [Number(vetorResultadoEmFormaDeMatriz.elements[0].toFixed(3)), Number(vetorResultadoEmFormaDeMatriz.elements[1].toFixed(3)), Number(vetorResultadoEmFormaDeMatriz.elements[2].toFixed(3))]);
+
+        }else {
+            console.log("O argumento passado não é um vetor ou tem uma dimensão maior ou menor a 3");
+        }
+    }
+
+    rotation3DY(vector, angle) {
+        if(vector instanceof Vector && vector.dim === 3){
+            const matrizRotacao3DY = new Matrix(3, 3, [
+                Math.cos(angle), 0, Math.sin(angle),
+                0, 1, 0,
+                -Math.sin(angle), 0, Math.cos(angle)
+
+            ])
+
+            const vetorEmFormaDeMatriz = new Matrix(3, 1, [
+                vector.elements[0],
+                vector.elements[1],
+                vector.elements[2]
+            ])
+
+            const vetorResultadoEmFormaDeMatriz = this.algebra.dot(matrizRotacao3DY, vetorEmFormaDeMatriz);
+            return new Vector(3, [Number(vetorResultadoEmFormaDeMatriz.elements[0].toFixed(3)), Number(vetorResultadoEmFormaDeMatriz.elements[1].toFixed(3)), Number(vetorResultadoEmFormaDeMatriz.elements[2].toFixed(3))]);
+
+
+
+        }else{
+            console.log("O argumento passado não é um vetor ou tem uma dimensão maior ou menor a 3")
+        }
+    }
+
+    rotation3DZ(vector, angle) {
+        if(vector instanceof Vector && vector.dim === 3){
+            const matrizRotacao3DZ = new Matrix(3, 3, [
+                Math.cos(angle), -Math.sin(angle), 0,
+                Math.sin(angle), Math.cos(angle), 0,
+                0, 0, 1
+            ]);
+
+            const vetorEmFormaDeMatriz = new Matrix(3, 1, [
+                vector.elements[0],
+                vector.elements[1],
+                vector.elements[2]
+            ]);
+
+            const vetorResultadoEmFormaDeMatriz = this.algebra.dot(matrizRotacao3DZ, vetorEmFormaDeMatriz);
+            return new Vector(3, [Number(vetorResultadoEmFormaDeMatriz.elements[0].toFixed(3)), Number(vetorResultadoEmFormaDeMatriz.elements[1].toFixed(3)), Number(vetorResultadoEmFormaDeMatriz.elements[2].toFixed(3))]);
+        }else {
+            console.log("O argumento passado não é um vetor ou tem uma dimensão maior ou menor a 3")
+        }
+    }
+
+    reflection2DX(vector) {
+        const reflectionMatrix = new Matrix(2, 2, [
+            1, 0,
+            0, -1
+        ]);
+        const vectorMatrix = new Matrix(2, 1, [vector.get(1), vector.get(2)]);
+        const result = this.algebra.dot(reflectionMatrix, vectorMatrix);
+        return new Vector(2, [
+            Number(result.get(1, 1).toFixed(3)),
+            Number(result.get(2, 1).toFixed(3))
+        ]);
+    }
+
+    reflection2DY(vector) {
+        const reflectionMatrix = new Matrix(2, 2, [
+            -1, 0,
+            0, 1
+        ]);
+        const vectorMatrix = new Matrix(2, 1, [vector.get(1), vector.get(2)]);
+        const result = this.algebra.dot(reflectionMatrix, vectorMatrix);
+        return new Vector(2, [
+            Number(result.get(1, 1).toFixed(3)),
+            Number(result.get(2, 1).toFixed(3))
+        ]);
+    }
+
+    reflection3DX(vector) {
+        const reflectionMatrix = new Matrix(3, 3, [
+            1, 0, 0,
+            0, -1, 0,
+            0, 0, 1
+        ]);
+        const vectorMatrix = new Matrix(3, 1, [vector.get(1), vector.get(2), vector.get(3)]);
+        const result = this.algebra.dot(reflectionMatrix, vectorMatrix);
+        return new Vector(3, [
+            Number(result.get(1, 1).toFixed(3)),
+            Number(result.get(2, 1).toFixed(3)),
+            Number(result.get(3, 1).toFixed(3))
+        ]);
+    }
+
+    reflection3DY(vector) {
+        const reflectionMatrix = new Matrix(3, 3, [
+            -1, 0, 0,
+            0, 1, 0,
+            0, 0, 1
+        ]);
+        const vectorMatrix = new Matrix(3, 1, [vector.get(1), vector.get(2), vector.get(3)]);
+        const result = this.algebra.dot(reflectionMatrix, vectorMatrix);
+        return new Vector(3, [
+            Number(result.get(1, 1).toFixed(3)),
+            Number(result.get(2, 1).toFixed(3)),
+            Number(result.get(3, 1).toFixed(3))
+        ]);
+    }
+
+    reflection3DZ(vector) {
+        const reflectionMatrix = new Matrix(3, 3, [
+            -1, 0, 0,
+            0, -1, 0,
+            0, 0, 1
+        ]);
+        const vectorMatrix = new Matrix(3, 1, [vector.get(1), vector.get(2), vector.get(3)]);
+        const result = this.algebra.dot(reflectionMatrix, vectorMatrix);
+        return new Vector(3, [
+            Number(result.get(1, 1).toFixed(3)),
+            Number(result.get(2, 1).toFixed(3)),
+            Number(result.get(3, 1).toFixed(3))
+        ]);
+    }
+
+    projection2dx(vector){
+        if (vector instanceof Vector || vector.dim === 2) {
+            const matrizProjecao2DX = new Matrix(2, 2, [
+                1, 0,
+                0, 0
+            ]);
+
+            const vectorXEmFormaDeMatriz = new Matrix(2, 1, [
+                vector.elements[0],
+                0,
+            ]);
+
+            const calculo = new LinearAlgebra();
+            const vetorResultado2DX = calculo.dot(matrizProjecao2DX, vectorXEmFormaDeMatriz);
+            return new Vector(2, [
+                Number(vetorResultado2DX.elements[0].toFixed(3)),
+                Number(vetorResultado2DX.elements[1].toFixed(3))
+            ]);
+        }else {
+            console.log("O argumento passado não é um vetor ou tem uma dimensão maior ou menor a 2");
+        }
+    }
+
+    projection2dy(vector){
+        if (vector instanceof Vector || vector.dim === 2) {
+            const matrizProjecao2DY = new Matrix(2, 2, [
+                0, 0,
+                0, 1
+            ]);
+
+            const vectorYEmFormaDeMatriz = new Matrix(2, 1, [
+                0,
+                vector.elements[1],
+            ]);
+
+            const calculo = new LinearAlgebra();
+            const vetorResultado2DY = calculo.dot(matrizProjecao2DY, vectorYEmFormaDeMatriz);
+            return new Vector(2, [
+                Number(vetorResultado2DY.elements[0].toFixed(3)),
+                Number(vetorResultado2DY.elements[1].toFixed(3))
+            ]);
+        }else {
+            console.log("O argumento passado não é um vetor ou tem uma dimensão maior ou menor a 2");
+        }
+    }
+
+    projection3dx(vector){
+        if (vector instanceof Vector || vector.dim === 3) {
+            const matrizProjecao3DX = new Matrix(3, 3, [
+                1, 0, 0,
+                0, 0, 0,
+                0, 0, 0
+            ]);
+
+            const vector3DXEmFormaDeMatriz = new Matrix(3, 1, [
+                vector.elements[0],
+                0,
+                0,
+            ]);
+
+            const calculo = new LinearAlgebra();
+            const vetorResultado3DX = calculo.dot(matrizProjecao3DX, vector3DXEmFormaDeMatriz);
+            return new Vector(3, [
+                Number(vetorResultado3DX.elements[0].toFixed(3)),
+                Number(vetorResultado3DX.elements[1].toFixed(3)),
+                Number(vetorResultado3DX.elements[2].toFixed(3))
+            ]);
+        }else {
+            console.log("O argumento passado não é um vetor ou tem uma dimensão maior ou menor a 2");
+        }
+    }
+
+    projection3dy(vector){
+        if (vector instanceof Vector || vector.dim === 3) {
+            const matrizProjecao3DY = new Matrix(3, 3, [
+                0, 0, 0,
+                0, 1, 0,
+                0, 0, 0
+            ]);
+
+            const vector3DYEmFormaDeMatriz = new Matrix(3, 1, [
+                0,
+                vector.elements[1],
+                0,
+            ]);
+
+            const calculo = new LinearAlgebra();
+            const vetorResultado3DY = calculo.dot(matrizProjecao3DY, vector3DYEmFormaDeMatriz);
+            return new Vector(3, [
+                Number(vetorResultado3DY.elements[0].toFixed(3)),
+                Number(vetorResultado3DY.elements[1].toFixed(3)),
+                Number(vetorResultado3DY.elements[2].toFixed(3))
+            ]);
+        }else {
+            console.log("O argumento passado não é um vetor ou tem uma dimensão maior ou menor a 2");
+        }
+    }
+
+    projection3dz(vector){
+        if (vector instanceof Vector || vector.dim === 3) {
+            const matrizProjecao3DZ = new Matrix(3, 3, [
+                0, 0, 0,
+                0, 0, 0,
+                0, 0, 1
+            ]);
+
+            const vector3DZEmFormaDeMatriz = new Matrix(3, 1, [
+                0,
+                0,
+                vector.elements[2],
+            ]);
+
+            const calculo = new LinearAlgebra();
+            const vetorResultado3DZ = calculo.dot(matrizProjecao3DZ, vector3DZEmFormaDeMatriz);
+            return new Vector(3, [
+                Number(vetorResultado3DZ.elements[0].toFixed(3)),
+                Number(vetorResultado3DZ.elements[1].toFixed(3)),
+                Number(vetorResultado3DZ.elements[2].toFixed(3))
+            ]);
+        }else {
+            console.log("O argumento passado não é um vetor ou tem uma dimensão maior ou menor a 2");
+        }
+    }
+
+    shearing(vector, kx, ky) {
+        if(vector instanceof Vector){
+            const matrizCis = new Matrix(2,2,[
+                1, kx,
+                ky, 1
+            ]);
+
+            const vetorEmFormaDeMatriz = new Matrix(2,1, [
+                vector.elements[0],
+                vector.elements[1]
+            ])
+
+            const caulculoCisalhamento = new LinearAlgebra()
+            const MatrixResultante = caulculoCisalhamento.dot(matrizCis, vetorEmFormaDeMatriz)
+            return new Vector(2,[Number(MatrixResultante.elements[0]), Number(MatrixResultante.elements[1])])
+        }
+    }
 
 
 
 
 }
 
+// Test for translate2D
+console.log("Testing translate2D");
+let vector2D = new Vector(2, [1, 2]);
+let dx = 3, dy = 4;
+let result = new Transformation().translate2D(vector2D, dx, dy);
+console.log(`translate2D(${vector2D.elements}, ${dx}, ${dy}) = ${result.elements}`); // Expected: [4, 6]
+
+// Test for translate3D
+console.log("Testing translate3D");
+let vector3D = new Vector(3, [1, 2, 3]);
+let dz = 5;
+result = new Transformation().translate3D(vector3D, dx, dy, dz);
+console.log(`translate3D(${vector3D.elements}, ${dx}, ${dy}, ${dz}) = ${result.elements}`); // Expected: [4, 6, 8]
+
+// Test for rotation2D
+console.log("Testing rotation2D");
+vector2D = new Vector(2, [1, 0]);
+let angle = Math.PI / 2;
+result = new Transformation().rotation2D(vector2D, angle);
+console.log(`rotation2D(${vector2D.elements}, ${angle}) = ${result.elements}`); // Expected: [0, 1]
+
+// Test for rotation3DX
+console.log("Testing rotation3DX");
+vector3D = new Vector(3, [1, 0, 0]);
+result = new Transformation().rotation3DX(vector3D, angle);
+console.log(`rotation3DX(${vector3D.elements}, ${angle}) = ${result.elements}`); // Expected: [1, 0, 0]
+
+// Test for rotation3DY
+console.log("Testing rotation3DY");
+vector3D = new Vector(3, [0, 1, 0]);
+result = new Transformation().rotation3DY(vector3D, angle);
+console.log(`rotation3DY(${vector3D.elements}, ${angle}) = ${result.elements}`); // Expected: [0, 1, 0]
+
+// Test for rotation3DZ
+console.log("Testing rotation3DZ");
+vector3D = new Vector(3, [0, 0, 1]);
+result = new Transformation().rotation3DZ(vector3D, angle);
+console.log(`rotation3DZ(${vector3D.elements}, ${angle}) = ${result.elements}`); // Expected: [0, 0, 1]
+
+// Test for reflection2DX
+console.log("Testing reflection2DX");
+vector2D = new Vector(2, [1, 2]);
+result = new Transformation().reflection2DX(vector2D);
+console.log(`reflection2DX(${vector2D.elements}) = ${result.elements}`); // Expected: [1, -2]
+
+// Test for reflection2DY
+console.log("Testing reflection2DY");
+vector2D = new Vector(2, [1, 2]);
+result = new Transformation().reflection2DY(vector2D);
+console.log(`reflection2DY(${vector2D.elements}) = ${result.elements}`); // Expected: [-1, 2]
+
+// Test for reflection3DX
+console.log("Testing reflection3DX");
+vector3D = new Vector(3, [1, 2, 3]);
+result = new Transformation().reflection3DX(vector3D);
+console.log(`reflection3DX(${vector3D.elements}) = ${result.elements}`); // Expected: [1, -2, 3]
+
+// Test for reflection3DY
+console.log("Testing reflection3DY");
+vector3D = new Vector(3, [1, 2, 3]);
+result = new Transformation().reflection3DY(vector3D);
+console.log(`reflection3DY(${vector3D.elements}) = ${result.elements}`); // Expected: [-1, 2, 3]
+
+// Test for reflection3DZ
+console.log("Testing reflection3DZ");
+vector3D = new Vector(3, [1, 2, 3]);
+result = new Transformation().reflection3DZ(vector3D);
+console.log(`reflection3DZ(${vector3D.elements}) = ${result.elements}`); // Expected: [-1, -2, 3]
+
+// Test for projection2dx
+console.log("Testing projection2dx");
+vector2D = new Vector(2, [1, 2]);
+result = new Transformation().projection2dx(vector2D);
+console.log(`projection2dx(${vector2D.elements}) = ${result.elements}`); // Expected: [1, 0]
+
+// Test for projection2dy
+console.log("Testing projection2dy");
+vector2D = new Vector(2, [1, 2]);
+result = new Transformation().projection2dy(vector2D);
+console.log(`projection2dy(${vector2D.elements}) = ${result.elements}`); // Expected: [0, 2]
+
+// Test for projection3dx
+console.log("Testing projection3dx");
+vector3D = new Vector(3, [1, 2, 3]);
+result = new Transformation().projection3dx(vector3D);
+console.log(`projection3dx(${vector3D.elements}) = ${result.elements}`); // Expected: [1, 0, 0]
+
+// Test for projection3dy
+console.log("Testing projection3dy");
+vector3D = new Vector(3, [1, 2, 3]);
+result = new Transformation().projection3dy(vector3D);
+console.log(`projection3dy(${vector3D.elements}) = ${result.elements}`); // Expected: [0, 2, 0]
+
+// Test for projection3dz
+console.log("Testing projection3dz");
+vector3D = new Vector(3, [1, 2, 3]);
+result = new Transformation().projection3dz(vector3D);
+console.log(`projection3dz(${vector3D.elements}) = ${result.elements}`); // Expected: [0, 0, 3]
+
+// Test for shearing
+console.log("Testing shearing");
+vector2D = new Vector(2, [1, 2]);
+let kx = 1, ky = 1;
+result = new Transformation().shearing(vector2D, kx, ky);
+console.log(`shearing(${vector2D.elements}, ${kx}, ${ky}) = ${result.elements}`); // Expected: [3, 3]
 
 
 
