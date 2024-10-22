@@ -150,7 +150,7 @@ class LinearAlgebra{
         }
 
 
-        console.log("Solução:");
+        console.log("Soalução:");
         for (let i = 0; i < n; i++) {
             console.log(`x[${i + 1}] = ${x[i]}`);
         }
@@ -158,10 +158,62 @@ class LinearAlgebra{
 
 }
 
+class Transformation{
+    translate2D(vetor, dx, dy){
+        if(vetor instanceof Vector){
+            if(vetor.dim === 2){
+                return new Vector(2, [vetor.elements[0]+dx, vetor.elements[1]+dy]);
+            }else{
+                console.log("A dimensão do vetor é maior ou menor que 2")
+            }
+
+        }else{
+            console.log("O argumento passado não é um vetor")
+        }
+    }
+
+
+    translate3D(vetor, dx, dy,dz){
+        if(vetor instanceof Vector){
+            if(vetor.dim === 3){
+                return new Vector(3,[vetor.elements[0]+dx, vetor.elements[1]+dy, vetor.elements[2]+dz]);
+            }else{
+                console.log("A dimensão do vetor é maior ou menor que 3")
+            }
+
+        }else{
+            console.log("O argumento não é vetor")
+        }
+    }
+
+    rotation2D(vector,angle){
+        if(vector instanceof Vector || vector.dim === 2){
+            const matrizRotacao2D = new Matrix(2,2,[
+                Math.cos(angle),-Math.sin(angle),
+                Math.sin(angle), Math.cos(angle)
+            ])
+
+            const vectorEmFormaDeMatriz = new Matrix(2,1,[
+                vector.elements[0],
+                vector.elements[1],
+            ])
+
+            const calculo = new LinearAlgebra()
+            const vetorResultadoEmFormaDeMatriz = calculo.dot(matrizRotacao2D,vectorEmFormaDeMatriz);
+            return  new Vector(2,[Number(vetorResultadoEmFormaDeMatriz.elements[0].toFixed(3)),Number(vetorResultadoEmFormaDeMatriz.elements[1].toFixed(3))])
+
+        }else{
+            console.log("O argumento passado não é um vetor ou tem uma dimensão maior ou menor a 2")
+        }
+
+        
+    }
 
 
 
 
+
+}
 
 
 
