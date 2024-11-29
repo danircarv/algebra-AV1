@@ -499,111 +499,95 @@ class Transformation{
 
 }
 
-// Test for translate2D
-console.log("Testing translate2D");
-let vector2D = new Vector(2, [1, 2]);
-let dx = 3, dy = 4;
-let result = new Transformation().translate2D(vector2D, dx, dy);
-console.log(`translate2D(${vector2D.elements}, ${dx}, ${dy}) = ${result.elements}`); // Expected: [4, 6]
+class Buscador {
+    quest(A) {
+        const algebra = new LinearAlgebra();
+        if (!(A instanceof Matrix)) {
+            throw new Error("O argumento deve ser uma instância de Matrix");
+        }
 
-// Test for translate3D
-console.log("Testing translate3D");
-let vector3D = new Vector(3, [1, 2, 3]);
-let dz = 5;
-result = new Transformation().translate3D(vector3D, dx, dy, dz);
-console.log(`translate3D(${vector3D.elements}, ${dx}, ${dy}, ${dz}) = ${result.elements}`); // Expected: [4, 6, 8]
+        const TOLERANCE = Math.pow(10, -10);
 
-// Test for rotation2D
-console.log("Testing rotation2D");
-vector2D = new Vector(2, [1, 0]);
-let angle = Math.PI / 2;
-result = new Transformation().rotation2D(vector2D, angle);
-console.log(`rotation2D(${vector2D.elements}, ${angle}) = ${result.elements}`); // Expected: [0, 1]
+        let a0Elements = new Array(A.cols).fill(0);
+        for (let j = 0; j < A.cols; j++) {
+            for (let i = 0; i < A.rows; i++) {
+                a0Elements[j] += A.get(i + 1, j + 1);
+            }
+        }
+        let a0 = new Vector(A.cols, a0Elements);
 
-// Test for rotation3DX
-console.log("Testing rotation3DX");
-vector3D = new Vector(3, [1, 0, 0]);
-result = new Transformation().rotation3DX(vector3D, angle);
-console.log(`rotation3DX(${vector3D.elements}, ${angle}) = ${result.elements}`); // Expected: [1, 0, 0]
+        let h0Elements = new Array(A.rows).fill(0);
+        for (let i = 0; i < A.rows; i++) {
+            for (let j = 0; j < A.cols; j++) {
+                h0Elements[i] += A.get(i + 1, j + 1);
+            }
+        }
+        let h0 = new Vector(A.rows, h0Elements);
 
-// Test for rotation3DY
-console.log("Testing rotation3DY");
-vector3D = new Vector(3, [0, 1, 0]);
-result = new Transformation().rotation3DY(vector3D, angle);
-console.log(`rotation3DY(${vector3D.elements}, ${angle}) = ${result.elements}`); // Expected: [0, 1, 0]
+        const At = algebra.transpose(A);
+        const norm = (elements) =>
+            Math.sqrt(elements.reduce((acc, val) => acc + val * val, 0));
 
-// Test for rotation3DZ
-console.log("Testing rotation3DZ");
-vector3D = new Vector(3, [0, 0, 1]);
-result = new Transformation().rotation3DZ(vector3D, angle);
-console.log(`rotation3DZ(${vector3D.elements}, ${angle}) = ${result.elements}`); // Expected: [0, 0, 1]
+        let previousA0 = null;
+        let convergence = false;
 
-// Test for reflection2DX
-console.log("Testing reflection2DX");
-vector2D = new Vector(2, [1, 2]);
-result = new Transformation().reflection2DX(vector2D);
-console.log(`reflection2DX(${vector2D.elements}) = ${result.elements}`); // Expected: [1, -2]
+        while (!convergence) {
+            const mulhi = algebra.dot(A, new Matrix(A.cols, 1, a0.elements));
+            const mulai = algebra.dot(At, new Matrix(A.rows, 1, h0.elements));
 
-// Test for reflection2DY
-console.log("Testing reflection2DY");
-vector2D = new Vector(2, [1, 2]);
-result = new Transformation().reflection2DY(vector2D);
-console.log(`reflection2DY(${vector2D.elements}) = ${result.elements}`); // Expected: [-1, 2]
+            if (!mulhi || !mulai) {
+                console.error("Erro durante a multiplicação das matrizes.");
+                return null;
+            }
 
-// Test for reflection3DX
-console.log("Testing reflection3DX");
-vector3D = new Vector(3, [1, 2, 3]);
-result = new Transformation().reflection3DX(vector3D);
-console.log(`reflection3DX(${vector3D.elements}) = ${result.elements}`); // Expected: [1, -2, 3]
+            const hi = mulhi.elements.map((el) => el / norm(mulhi.elements));
+            const ai = mulai.elements.map((el) => el / norm(mulai.elements));
 
-// Test for reflection3DY
-console.log("Testing reflection3DY");
-vector3D = new Vector(3, [1, 2, 3]);
-result = new Transformation().reflection3DY(vector3D);
-console.log(`reflection3DY(${vector3D.elements}) = ${result.elements}`); // Expected: [-1, 2, 3]
+            if (previousA0) {
+                const error = Math.max(...ai.map((val, idx) => 
+                    Math.abs(val - previousA0[idx])));
+                if (error < TOLERANCE) {
+                    convergence = true;
+                }
+            }
 
-// Test for reflection3DZ
-console.log("Testing reflection3DZ");
-vector3D = new Vector(3, [1, 2, 3]);
-result = new Transformation().reflection3DZ(vector3D);
-console.log(`reflection3DZ(${vector3D.elements}) = ${result.elements}`); // Expected: [-1, -2, 3]
+            previousA0 = [...ai];
+            h0 = new Vector(hi.length, hi);
+            a0 = new Vector(ai.length, ai);
+        }
 
-// Test for projection2dx
-console.log("Testing projection2dx");
-vector2D = new Vector(2, [1, 2]);
-result = new Transformation().projection2dx(vector2D);
-console.log(`projection2dx(${vector2D.elements}) = ${result.elements}`); // Expected: [1, 0]
+        const ranking = a0.elements.map((value, index) => ({
+            site: index + 1,
+            score: value
+        }));
 
-// Test for projection2dy
-console.log("Testing projection2dy");
-vector2D = new Vector(2, [1, 2]);
-result = new Transformation().projection2dy(vector2D);
-console.log(`projection2dy(${vector2D.elements}) = ${result.elements}`); // Expected: [0, 2]
+        ranking.sort((a, b) => b.score - a.score);
 
-// Test for projection3dx
-console.log("Testing projection3dx");
-vector3D = new Vector(3, [1, 2, 3]);
-result = new Transformation().projection3dx(vector3D);
-console.log(`projection3dx(${vector3D.elements}) = ${result.elements}`); // Expected: [1, 0, 0]
+        console.log("\nPAGE RANK RESULTS:");
+        console.log("------------------");
+        ranking.forEach((site, index) => {
+            console.log(`Rank ${index + 1}: Site ${site.site} (Score: ${site.score.toFixed(10)})`);
+        });
 
-// Test for projection3dy
-console.log("Testing projection3dy");
-vector3D = new Vector(3, [1, 2, 3]);
-result = new Transformation().projection3dy(vector3D);
-console.log(`projection3dy(${vector3D.elements}) = ${result.elements}`); // Expected: [0, 2, 0]
+        return {
+            scores: a0.elements,
+            ranking: ranking
+        };
+    }
+}
 
-// Test for projection3dz
-console.log("Testing projection3dz");
-vector3D = new Vector(3, [1, 2, 3]);
-result = new Transformation().projection3dz(vector3D);
-console.log(`projection3dz(${vector3D.elements}) = ${result.elements}`); // Expected: [0, 0, 3]
+const pageRank = new Buscador();
+const matrix = new Matrix(10, 10, [
+    0, 1, 1, 0, 1, 1, 0, 0, 0, 1,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+    0, 1, 1, 0, 0, 1, 1, 0, 0, 1,
+    0, 0, 0, 0, 0, 1, 0, 0, 1, 0,
+    0, 1, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 1, 0,
+    0, 1, 1, 0, 0, 1, 0, 1, 0, 1,
+    0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 1, 0, 0, 0, 0
+]);
 
-// Test for shearing
-console.log("Testing shearing");
-vector2D = new Vector(2, [1, 2]);
-let kx = 1, ky = 1;
-result = new Transformation().shearing(vector2D, kx, ky);
-console.log(`shearing(${vector2D.elements}, ${kx}, ${ky}) = ${result.elements}`); // Expected: [3, 3]
-
-
-
+const result = pageRank.quest(matrix);
